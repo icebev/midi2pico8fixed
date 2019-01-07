@@ -69,7 +69,6 @@ int main()
 	// Don't ignore sysex, timing, or active sensing messages.
 	midiin->ignoreTypes(false, false, false);
 	std::cout << "\nReading MIDI input ... press <enter> to quit.\n";
-	std::cout << "\nCOUCOU MA CHERIE !!!\n";
 	char input;
 	std::cin.get(input);
 	// Clean up
