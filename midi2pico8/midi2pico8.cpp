@@ -69,7 +69,7 @@ int main()
 		while (midiin->getPortCount() == 0)
 			Sleep(200);
 
-		std::cout << "Reading MIDI input...\n";
+		std::cout << "Reading MIDI input from " << midiin->getPortName(0) << "...\n";
 		midiin->openPort(0);
 
 		while (midiin->getPortCount() > 0)
