@@ -12,7 +12,7 @@ void mycallback(double deltatime, std::vector< unsigned char > *message, void *u
 	unsigned int nBytes = message->size();
 	if (message->at(0) == 144)
 	{
-        // 36 -> 84
+		// 36 -> 84
 		int note = message->at(1);
 		char vks[] = "Q2W3ER5T6Y7UZSXDCVGBHNJM";
 		int scs[] =
@@ -39,6 +39,8 @@ void mycallback(double deltatime, std::vector< unsigned char > *message, void *u
 			SendInput(1, &ip, sizeof(INPUT));
 			ip.ki.dwFlags = KEYEVENTF_KEYUP;
 			SendInput(1, &ip, sizeof(INPUT));
+
+			std::cout << vk;
 		}
 	}
 #if 0
@@ -55,24 +57,28 @@ void mycallback(double deltatime, std::vector< unsigned char > *message, void *u
 int main()
 {
 	RtMidiIn *midiin = new RtMidiIn();
-	// Check available ports.
-	unsigned int nPorts = midiin->getPortCount();
-	if (nPorts == 0) {
-		std::cout << "No ports available!\n";
-		goto cleanup;
-	}
-	midiin->openPort(0);
-	// Set our callback function.  This should be done immediately after
-	// opening the port to avoid having incoming messages written to the
-	// queue.
 	midiin->setCallback(&mycallback);
-	// Don't ignore sysex, timing, or active sensing messages.
 	midiin->ignoreTypes(false, false, false);
-	std::cout << "\nReading MIDI input ... press <enter> to quit.\n";
-	char input;
-	std::cin.get(input);
-	// Clean up
-cleanup:
+
+	std::cout << "MIDI to PICO-8\n\n";
+
+	while (true)
+	{
+		std::cout << "Waiting for a MIDI input device...\n";
+
+		while (midiin->getPortCount() == 0)
+			Sleep(200);
+
+		std::cout << "Reading MIDI input...\n";
+		midiin->openPort(0);
+
+		while (midiin->getPortCount() > 0)
+			Sleep(200);
+
+		std::cout << "\nDisconnceted!\n";
+		midiin->closePort();
+	}
+
 	delete midiin;
 	return 0;
 }
