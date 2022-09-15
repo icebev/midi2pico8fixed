@@ -7,8 +7,16 @@
 
 #include "../RtMidi.h"
 
+std::vector< unsigned char >* old_message;
+
 void mycallback(double deltatime, std::vector< unsigned char > *message, void *userData)
 {
+
+	if (message == old_message)
+	{
+		old_message = NULL;
+		return;
+	}
 	unsigned int nBytes = message->size();
 	if (message->at(0) == 144)
 	{
@@ -41,6 +49,8 @@ void mycallback(double deltatime, std::vector< unsigned char > *message, void *u
 			SendInput(1, &ip, sizeof(INPUT));
 
 			std::cout << vk;
+
+			old_message = message;
 		}
 	}
 #if 0
@@ -58,7 +68,7 @@ int main()
 {
 	RtMidiIn *midiin = new RtMidiIn();
 	midiin->setCallback(&mycallback);
-	midiin->ignoreTypes(false, false, false);
+	midiin->ignoreTypes(true, true, true);
 
 	std::cout << "MIDI to PICO-8\n\n";
 
@@ -75,7 +85,7 @@ int main()
 		while (midiin->getPortCount() > 0)
 			Sleep(200);
 
-		std::cout << "\nDisconnceted!\n";
+		std::cout << "\nDisconnected!\n";
 		midiin->closePort();
 	}
 
